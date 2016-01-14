@@ -60,6 +60,7 @@ FOUNDATION_STATIC_INLINE NSUInteger SDCacheCostForImage(UIImage *image) {
 
 @property (strong, nonatomic) NSCache *memCache;
 @property (strong, nonatomic) NSString *diskCachePath;
+@property (strong, nonatomic) NSString *customDiskCachePath;
 @property (strong, nonatomic) NSMutableArray *customPaths;
 @property (SDDispatchQueueSetterSementics, nonatomic) dispatch_queue_t ioQueue;
 
@@ -188,10 +189,20 @@ FOUNDATION_STATIC_INLINE NSUInteger SDCacheCostForImage(UIImage *image) {
     return filename;
 }
 
+- (void)useCustomDiskCachePath:(NSString *)path {
+    self.customDiskCachePath = path;
+    if (path) {
+        self.diskCachePath = path;
+    }
+}
+
 #pragma mark ImageCache
 
 // Init the disk cache
 -(NSString *)makeDiskCachePath:(NSString*)fullNamespace{
+    if (self.customDiskCachePath) {
+        return self.customDiskCachePath;
+    }
     NSArray *paths = NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES);
     return [paths[0] stringByAppendingPathComponent:fullNamespace];
 }
